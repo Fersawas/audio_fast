@@ -39,10 +39,12 @@ class User(Base):
     is_super_admin: Mapped[bool] = mapped_column(default=False)
 
     subscription: Mapped["UserSubscription"] = relationship(
-        "UserSubscription", back_populates="user", uselist=False
+        "UserSubscription", back_populates="user", uselist=False, lazy="joined"
     )
     audio_files: Mapped[list["AudioFile"]] = relationship(
-        "AudioFile", back_populates="user"
+        "AudioFile",
+        back_populates="user",
+        cascade="all, delete-orphan",
     )
 
 
@@ -71,7 +73,9 @@ class UserSubscription(Base):
         default=SubscriptionRights.base,
     )
 
-    user: Mapped["User"] = relationship("User", back_populates="user_subscription")
+    user: Mapped["User"] = relationship(
+        "User", back_populates="user_subscription", uselist=False
+    )
     subscription: Mapped["Subscription"] = relationship("Subscription")
 
     @hybrid_property
@@ -114,5 +118,5 @@ class AudioResult(Base):
     )
 
     audio_file: Mapped["AudioFile"] = relationship(
-        "AudioFile", back_populates="audio_result"
+        "AudioFile", back_populates="audio_result", uselist=False
     )
