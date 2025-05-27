@@ -111,7 +111,7 @@ class AudioResultStatus(StrEnum):
 
 class AudioResult(Base):
     audio_file_id: Mapped[int] = mapped_column(ForeignKey("audiofiles.id"))
-    transcribition: Mapped[JSONB] = mapped_column(JSONB)
+    transcription: Mapped[JSONB] = mapped_column(JSONB)
     status: Mapped[AudioResultStatus] = mapped_column(
         ENUM(AudioResultStatus, name="audio_result_status", create_type=True),
         default=AudioResultStatus.on_process,
