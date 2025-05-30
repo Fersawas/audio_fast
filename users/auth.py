@@ -1,14 +1,13 @@
+from fastapi import Response
+
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from jose import jwt
 
-from pydantic import EmailStr
-
-from users.repository import UserRepository
 from core.config import get_auth_data
 
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 
 
 def get_password(password: str):
@@ -20,20 +19,44 @@ def verify_password(plain_password: str, hashed_password: str):
 
 
 def create_access_token(data: dict) -> str:
-    to_encode = data.copy()
-    expire = datetime.now() + timedelta(
+    auth_data = get_auth_data()
+    access_payload = data.copy()
+    access_expire = datetime.now() + timedelta(
         days=int(get_auth_data("ACCESS_TOKEN_EXPIRE_DAYS"))
     )
-    to_encode.update({"exp": expire})
-    auth_data = get_auth_data()
-    encode_jwt = jwt.encode(
-        to_encode, auth_data["secret_key"], algorithm=auth_data["algorithm"]
+    access_payload.update({"exp": access_expire})
+    access_jwt = jwt.encode(
+        access_payload, auth_data["secret_key"], algorithm=auth_data["algorithm"]
     )
-    return encode_jwt
+
+    refresh_payload = data.copy()
+    refresh_expire = datetime.now() + timedelta(
+        days=int(get_auth_data("REFRESH_TOKEN_EXPIRE_DAYS"))
+    )
+    refresh_payload.update({"exp": refresh_expire})
+    refresh_jwt = jwt.encode(
+        refresh_payload, auth_data["secret_key"], algorithm=auth_data["algorithm"]
+    )
+    return {"access_token": access_jwt, "refresh_token": refresh_jwt}
 
 
-async def authentificate_user(email: EmailStr, password: str):
-    user = await UserRepository.get_user(email=email)
-    if not user or verify_password(password, user.password) is False:
-        return None
-    return user
+def set_tokens(response: Response, user_id: int):
+    tokens = create_access_token({"sub": user_id})
+    access_token = tokens.get("access_token")
+    refresh_token = tokens.get("refresh_token")
+
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        samesite="lax",
+        secure=True,
+    )
+
+    response.set_cookie(
+        key="refresh_token",
+        value=refresh_token,
+        httponly=True,
+        samesite="lax",
+        secure=True,
+    )

@@ -1,4 +1,6 @@
-from pydantic import BaseModel, ConfigDict
+import re
+
+from pydantic import BaseModel, ConfigDict, field_validator, ValidationError
 from datetime import datetime
 
 
@@ -10,6 +12,19 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str
+
+    @field_validator("phone")
+    @classmethod
+    def validate_phone(cls, value: str):
+        pattern = r"7\d{10}$"
+        value = "".join([char for char in value if char.isdigit()])
+        if len(value) < 10:
+            raise ValueError()
+        value = "7" + value[1:]
+        clean_phone = re.search(pattern, value)
+        if not clean_phone:
+            raise ValueError()
+        return clean_phone.group()
 
 
 class UserOut(UserBase):

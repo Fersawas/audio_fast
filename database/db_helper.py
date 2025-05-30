@@ -6,7 +6,6 @@ from sqlalchemy.ext.asyncio import (
 )
 from database.db_config import settings_db
 
-from contextlib import asynccontextmanager
 
 DATABASE_URL = settings_db.database_url()
 
@@ -15,7 +14,6 @@ engine = create_async_engine(DATABASE_URL)
 async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
 
 
-@asynccontextmanager
 async def get_db_session():
     session = async_session_maker()
     try:

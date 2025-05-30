@@ -31,14 +31,14 @@ class Base(AsyncAttrs, DeclarativeBase):
 class User(Base):
     username: Mapped[str] = mapped_column(String(150))
     email: Mapped[str] = mapped_column(String(150), unique=True)
-    password: Mapped[str] = mapped_column(String(60))
+    password: Mapped[str] = mapped_column(String(255))
     phone: Mapped[str] = mapped_column(String(20), unique=True)
 
     is_active: Mapped[bool] = mapped_column(default=False)
     is_admin: Mapped[bool] = mapped_column(default=False)
     is_super_admin: Mapped[bool] = mapped_column(default=False)
 
-    subscription: Mapped["UserSubscription"] = relationship(
+    user_subscription: Mapped["UserSubscription"] = relationship(
         "UserSubscription", back_populates="user", uselist=False, lazy="joined"
     )
     audio_files: Mapped[list["AudioFile"]] = relationship(
