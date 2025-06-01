@@ -42,13 +42,12 @@ class UserService:
         try:
             payload = jwt.decode(
                 token,
-                get_auth_data("secret_key"),
-                algorithms=[get_auth_data("algorithm")],
+                get_auth_data().get("secret_key"),
+                algorithms=[get_auth_data().get("algorithm")],
             )
             user_id = payload.get("sub")
             if not user_id:
                 raise UserNotFoundException
-
             user = await self.repo.get_user(user_id=user_id)
             if not user:
                 raise UserNotFoundException
@@ -61,12 +60,15 @@ class UserService:
         token: str = Depends(get_access_token),
     ) -> UserOut:
         try:
+            if not token:
+                raise JWTException
             payload = jwt.decode(
                 token,
-                get_auth_data("secret_key"),
-                algorithms=[get_auth_data("algorithm")],
+                get_auth_data().get("secret_key"),
+                algorithms=[get_auth_data().get("algorithm")],
             )
             user_id = payload.get("sub")
+            print("here")
         except ExpiredSignatureError:
             raise ExpitedTokenException
         except JWTError:
@@ -77,8 +79,8 @@ class UserService:
             raise UserNotFoundException
         return UserOut.model_validate(user)
 
-    async def authentificate_user(self, email: EmailStr, password: str):
-        user = await self.repo.get_user(email=email)
+    async def authentificate_user(self, email: EmailStr, password: str) -> UserOut:
+        user = await self.repo.get_user_by_email(email=email)
         if not user or verify_password(password, user.password) is False:
             return None
-        return user
+        return UserOut.model_validate(user)

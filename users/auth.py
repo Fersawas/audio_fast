@@ -22,7 +22,7 @@ def create_access_token(data: dict) -> str:
     auth_data = get_auth_data()
     access_payload = data.copy()
     access_expire = datetime.now() + timedelta(
-        days=int(get_auth_data("ACCESS_TOKEN_EXPIRE_DAYS"))
+        days=int(get_auth_data().get("access_token_expire"))
     )
     access_payload.update({"exp": access_expire})
     access_jwt = jwt.encode(
@@ -31,7 +31,7 @@ def create_access_token(data: dict) -> str:
 
     refresh_payload = data.copy()
     refresh_expire = datetime.now() + timedelta(
-        days=int(get_auth_data("REFRESH_TOKEN_EXPIRE_DAYS"))
+        days=int(get_auth_data().get("refresh_token_expire"))
     )
     refresh_payload.update({"exp": refresh_expire})
     refresh_jwt = jwt.encode(
@@ -41,7 +41,7 @@ def create_access_token(data: dict) -> str:
 
 
 def set_tokens(response: Response, user_id: int):
-    tokens = create_access_token({"sub": user_id})
+    tokens = create_access_token({"sub": str(user_id)})
     access_token = tokens.get("access_token")
     refresh_token = tokens.get("refresh_token")
 

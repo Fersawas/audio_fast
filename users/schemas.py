@@ -40,3 +40,8 @@ class UserUpdate(BaseModel):
     email: str | None = None
     phone: str | None = None
     password: str | None = None
+
+
+class UserLogin(BaseModel):
+    email: str
+    password: str

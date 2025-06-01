@@ -5,13 +5,21 @@ UserExistsException = HTTPException(
 )
 
 
-class UserNotFoundException(Exception):
+class MainException(Exception):
     pass
 
 
-class JWTException(Exception):
+class UserNotFoundException(MainException):
     pass
 
 
-class ExpitedTokenException(Exception):
+class JWTException(MainException):
+    pass
+
+
+class ExpitedTokenException(MainException):
+    pass
+
+
+class PasswordNotMatchException(MainException):
     pass

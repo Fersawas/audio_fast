@@ -27,7 +27,7 @@ class UserRepository:
     async def get_user(self, user_id):
         try:
             result = await self.session.execute(
-                select(User).where(User.user_id == user_id)
+                select(User).where(User.id == int(user_id))
             )
             user = result.scalar_one_or_none()
             if not user:
