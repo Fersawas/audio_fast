@@ -35,6 +35,13 @@ class UserOut(UserBase):
     updated_at: datetime
 
 
+class UserOutPrivate(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    username: str
+    id: int
+
+
 class UserUpdate(BaseModel):
     username: str | None = None
     email: str | None = None
@@ -45,3 +52,8 @@ class UserUpdate(BaseModel):
 class UserLogin(BaseModel):
     email: str
     password: str
+
+
+class PasswordUpdate(BaseModel):
+    new_password: str
+    old_password: str

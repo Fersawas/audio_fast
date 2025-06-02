@@ -23,3 +23,11 @@ class ExpitedTokenException(MainException):
 
 class PasswordNotMatchException(MainException):
     pass
+
+
+class DataBaseException(MainException):
+    pass
+
+
+class WrongPasswordException(MainException):
+    pass
