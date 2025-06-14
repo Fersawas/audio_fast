@@ -1,11 +1,8 @@
 from fastapi import APIRouter, Request, Response, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from database.models import User
 from users.schemas import UserCreate, UserOut, UserLogin, UserUpdate, PasswordUpdate
 from users.services import UserService, get_user_service
 from users.auth import set_tokens
-from exceptions.exceptions import PasswordNotMatchException
 from exceptions.http import handle_exceptions
 
 

@@ -6,9 +6,8 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from users.schemas import UserCreate
 from database.models import User
-from database.db_helper import get_db_session
-from users.auth import get_password, verify_password
-from exceptions.exceptions import DataBaseException, UserNotFoundException
+from users.auth import get_password
+from exceptions.exceptions import DataBaseException
 
 
 class UserRepository:
